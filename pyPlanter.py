@@ -79,12 +79,63 @@ class Plant():
 
         self.ph = round(self.ph + self.ph * random.uniform(-0.1, 0.03),1)
 
+class Planter():
+    def __init__(self, plants: list):
+        self.plants = plants
+
+    def add_plant(self, plant):
+        self.plants.append(plant)
+
+    def get_plants(self):
+        return self.plants
+
+    def get_plant_count(self):
+        return len(self.plants)
+
+    def has_dead_plants(self):
+        for plant in self.plants:
+            if not plant.alive:
+                return True
+        return False
+
+    def get_dead_plants(self):
+        dead_plants = []
+        for plant in self.plants:
+            if plant.alive == False:
+                dead_plants.append(plant)
+        return dead_plants
+
+    def get_live_plants(self):
+        live_plants = []
+        for plant in self.plants:
+            if plant.alive == True:
+                live_plants.append(plant)
+        return live_plants
+
+    def tick(self):
+        for plant in self.plants:
+            plant.tick()
+
 
 
 cactus = Plant("cactus", 14, 20, 5.8)
+orchid = Plant("Orchid", 7, 30, 6.0)
+planter = Planter([cactus, orchid])
 
-while cactus.alive:
+# print(planter.get_plants())
+# print(planter.get_plant_count())
+print(planter.has_dead_plants())
+
+
+while not planter.has_dead_plants():
     print(cactus)
     print("-----------------")
-    cactus.tick()
+    planter.tick()
     cactus.add_water(1)
+
+if planter.has_dead_plants():
+    print("found dead plants:")
+    print(planter.get_dead_plants())
+
+print("living:\n")
+print(planter.get_live_plants())
