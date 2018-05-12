@@ -7,19 +7,23 @@ SEED = 897354
 
 random.seed(SEED)
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARNING)
 
 # logger = logging.getLogger('pyPlanter')
 # logger.setLevel(logging.DEBUG)
 
-class Plant():
-    def __init__(self, name: str, schedule: int, optimal_moisture: int, optimal_ph: float, health = 100):
-        '''
-        :param name: Name of plant
-        :param schedule: How often the plant should be watered in days
-        :param optimalmoisture: Optimal moisture level for plant (0-100)
-        :param health: Health of plant (0-100)
-        '''
+
+class Plant:
+    def __init__(self, name: str, schedule: int, optimal_moisture: int, optimal_ph: float, health=100):
+        """
+        Defines a plant
+
+        :param name: name of plant -> string
+        :param schedule: how often it should be watered in days -> int
+        :param optimal_moisture: optimal soil moisture level (0-100) -> int
+        :param optimal_ph: optimal soil PH level (0-100) -> int
+        :param health: plant health (0-100) -> int
+        """
         self.name = name
         self.schedule = timedelta(days=schedule)
         self.optimal_moisture = optimal_moisture
@@ -43,10 +47,10 @@ class Plant():
 
     def add_water(self, amount: int):
         self.watertime = dt.date.today()
-        self.old_moisture = self.moisture
+        old_moisture = self.moisture
         self.moisture = self.moisture + amount
         logging.debug(f'Added {amount} ml water.\n'
-                      f'Old amount:\t{self.old_moisture}\n'
+                      f'Old amount:\t{old_moisture}\n'
                       f'New amount:\t{self.moisture}')
 
     def add_lime(self, amount: float):
@@ -58,11 +62,11 @@ class Plant():
     def next_water_time(self):
         return self.watertime + self.schedule
 
-    def take_damage(self, dmg: int) -> int:
-        '''
+    def take_damage(self, dmg: int):
+        """
         :param dmg: amount of damage the plant takes
         :return: remaining health
-        '''
+        """
         self.health = self.health - dmg
 
     def get_health(self):
@@ -73,13 +77,14 @@ class Plant():
 
     def tick(self):
         self.alive = self.is_alive()
-        self.moisture = self.moisture - random.uniform(1,2)
+        self.moisture = self.moisture - random.uniform(1, 2)
         if (self.optimal_moisture * 0.9 > self.moisture) or (self.moisture > self.optimal_moisture * 1.1):
             self.take_damage(abs(self.optimal_moisture - self.moisture))
 
-        self.ph = round(self.ph + self.ph * random.uniform(-0.1, 0.03),1)
+        self.ph = round(self.ph + self.ph * random.uniform(-0.1, 0.03), 1)
 
-class Planter():
+
+class Planter:
     def __init__(self, plants: list):
         self.plants = plants
 
@@ -99,23 +104,14 @@ class Planter():
         return False
 
     def get_dead_plants(self):
-        dead_plants = []
-        for plant in self.plants:
-            if plant.alive == False:
-                dead_plants.append(plant)
-        return dead_plants
+        return [plant for plant in self.plants if plant.alive is False]
 
     def get_live_plants(self):
-        live_plants = []
-        for plant in self.plants:
-            if plant.alive == True:
-                live_plants.append(plant)
-        return live_plants
+        return [plant for plant in self.plants if plant.alive is True]
 
     def tick(self):
         for plant in self.plants:
             plant.tick()
-
 
 
 cactus = Plant("cactus", 14, 20, 5.8)
